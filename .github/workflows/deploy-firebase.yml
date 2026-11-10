@@ -1,0 +1,50 @@
+name: Deploy website to Firebase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+      - name: Set up Node on GitHub
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Test website
+        run: npm test
+      - name: Build website
+        run: npm run build
+      - name: Check Firebase deployment connection
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GRANT_DF598 }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo '::error::Add the repository Actions secret FIREBASE_SERVICE_ACCOUNT_GRANT_DF598. See DEPLOYMENT.md.'
+            exit 1
+          fi
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GRANT_DF598 }}
+      - name: Deploy Firestore security rules
+        run: npx --yes firebase-tools@14.12.1 deploy --project grant-df598 --only firestore:rules --non-interactive
+      - name: Publish website
+        run: npx --yes firebase-tools@14.12.1 deploy --project grant-df598 --only hosting --non-interactive
+      - name: Website address
+        run: echo 'Website deployed to https://grant-df598.web.app' >> "$GITHUB_STEP_SUMMARY"

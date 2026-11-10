@@ -35,3 +35,6 @@ Recommendations estimate application effort and probability-weighted funding, ex
 
 ## Validation limits
 Automated checks cover grant scoring, guest login gating, account transitions, and failed-save behavior. Live Firebase authentication, Firestore rule enforcement and cross-device persistence require a configured project and the manual acceptance checks above; these are not verified by a local demo.
+
+## Automatic publishing from GitHub
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the one-time Firebase authorization and GitHub Actions setup. No local Node installation is needed. After the repository secret is configured, pushes to `main` publish Hosting and Firestore rules automatically.

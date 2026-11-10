@@ -22,3 +22,6 @@ coverage/
 Thumbs.db
 .vscode/
 .idea/
+
+# Temporary Google Actions authentication files
+gha-creds-*.json
