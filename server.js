@@ -1,0 +1,3 @@
+const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
+const allowed=new Set(['index.html','style.css','app.js','scoring.js','account.js','firebase-config.json']);
+http.createServer((req,res)=>{const name=req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0].slice(1);if(!allowed.has(name)){res.writeHead(404);return res.end('Not found');}fs.readFile(path.join(__dirname,name),(err,data)=>{if(err){res.writeHead(404);return res.end('Not found');}res.setHeader('Content-Type',name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':name.endsWith('.json')?'application/json':'text/html');res.setHeader('X-Content-Type-Options','nosniff');res.end(data);});}).listen(process.env.PORT||3000,'0.0.0.0');

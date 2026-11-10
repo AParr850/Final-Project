@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    match /users/{uid} {
+      allow read, delete: if owner(uid);
+      allow create, update: if owner(uid)
+        && request.resource.data.keys().hasOnly(['name','organization','mission','website','location','budget','updatedAt'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 100
+        && request.resource.data.organization is string && request.resource.data.organization.size() <= 150
+        && request.resource.data.mission is string && request.resource.data.mission.size() <= 2000
+        && request.resource.data.website is string && request.resource.data.website.size() <= 500
+        && request.resource.data.location is string && request.resource.data.location.size() <= 200
+        && request.resource.data.budget is string && request.resource.data.budget.size() <= 20;
+      match /grants/{grantId} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid)
+          && request.resource.data.keys().hasOnly(['id','name','funder','amount','deadline','fit','hours','rate','probability','eligible','saved','createdAt'])
+          && request.resource.data.id == grantId
+          && request.resource.data.name is string && request.resource.data.name.size() <= 100
+          && request.resource.data.funder is string && request.resource.data.funder.size() <= 100
+          && request.resource.data.amount is string && request.resource.data.amount.size() <= 20
+          && request.resource.data.deadline is string && request.resource.data.deadline.size() == 10
+          && request.resource.data.fit in ['1','3','5']
+          && request.resource.data.hours is string && request.resource.data.hours.size() <= 10
+          && request.resource.data.rate is string && request.resource.data.rate.size() <= 10
+          && request.resource.data.probability is string && request.resource.data.probability.size() <= 5
+          && request.resource.data.eligible in ['yes','no','unsure']
+          && request.resource.data.saved is bool && request.resource.data.createdAt is number;
+      }
+    }
+  }
+}

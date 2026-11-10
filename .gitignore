@@ -1,0 +1,24 @@
+node_modules/
+public/
+.firebase/
+*-debug.log
+
+# Local settings and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*service-account*.json
+*serviceAccount*.json
+*firebase-adminsdk*.json
+credentials.json
+.config/
+
+# Generated output and editor files
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
