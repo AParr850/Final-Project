@@ -53,23 +53,23 @@ test('award probability page appears beneath overview and has its own route',()=
  assert.equal(d.querySelector('#probability-page').hidden,false);
  assert.equal(d.querySelector('.assessments').hidden,true);
  assert.equal(d.querySelector('.hero').hidden,true);
- assert.equal(d.querySelector('#probability-result').textContent,'10%');
+ assert.equal(d.querySelector('#probability-page').children.length,2);
+ assert.equal(d.querySelector('.title-row').hidden,true);
+ assert.equal(d.querySelector('#sync-status').hidden,true);
  d.querySelector('[data-page="Overview"]').click();
  assert.equal(d.querySelector('#probability-page').hidden,true);
+ assert.equal(d.querySelector('.title-row').hidden,false);
+ assert.equal(d.querySelector('#sync-status').hidden,false);
  w.close();
 });
-test('award estimate uses all four dropdowns and handles invalid counts and caps',()=>{
+test('probability page keeps the formula and four selectable variables',()=>{
  const w=setup('http://localhost/#award-probability'),d=w.document;
- function choose(name,value){const select=d.querySelector('#probability-'+name);select.value=String(value);select.dispatchEvent(new w.Event('change',{bubbles:true}));}
- choose('awards',20);choose('applicants',100);choose('fit',1.5);choose('relationship',1.25);
- assert.equal(d.querySelector('#probability-result').textContent,'37.5%');
- choose('awards',0);assert.equal(d.querySelector('#probability-result').textContent,'0%');
- choose('awards',100);choose('applicants',100);
- assert.equal(d.querySelector('#probability-result').textContent,'100%');
- assert.match(d.querySelector('#probability-breakdown').textContent,/capped/);
- choose('applicants',10);
- assert.equal(d.querySelector('#probability-result').textContent,'Check counts');
- choose('applicants',1000);
- assert.equal(d.querySelector('#probability-result').textContent,'18.75%');
+ assert.match(d.querySelector('.probability-formula').textContent,/Award chance = \(awards ÷ applicants\) × fit × relationship/);
+ assert.equal(d.querySelectorAll('#probability-page select').length,4);
+ for(const [name,value] of [['awards','20'],['applicants','100'],['fit','1.5'],['relationship','1.25']]){
+  const select=d.querySelector('#probability-'+name);select.value=value;
+  select.dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(select.value,value);
+ }
+ assert.equal(d.querySelector('#probability-result'),null);
  w.close();
 });
