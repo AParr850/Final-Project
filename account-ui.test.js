@@ -73,3 +73,38 @@ test('probability page keeps the formula and four selectable variables',()=>{
  assert.equal(d.querySelector('#probability-result'),null);
  w.close();
 });
+
+test('award probability stays accessible with existing account assessments and after sign-out',()=>{
+ const w=setup(),d=w.document;
+ const grant={id:'existing',name:'Existing assessment',funder:'Foundation',amount:1000,deadline:'2099-01-01',fit:5,hours:1,rate:40,probability:50,eligible:'yes',saved:true};
+ const change=(user,grants)=>w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user,grants}}));
+ change({uid:'returning'},[grant]);
+ d.querySelector('[data-page="Grant assessments"]').click();
+ d.querySelector('[data-id="existing"]').click();
+ assert.equal(d.querySelector('#detail-dialog').open,true);
+ d.querySelector('[data-open-probability]').click();
+ assert.equal(d.querySelector('#detail-dialog').open,false);
+ assert.equal(w.location.hash,'#award-probability');
+ assert.equal(d.querySelector('#probability-page').hidden,false);
+ change({uid:'returning'},[grant]);
+ assert.equal(d.querySelector('#probability-page').hidden,false);
+ change(null,[]);
+ assert.equal(d.querySelector('#probability-page').hidden,false);
+ assert.equal(d.querySelector('[data-page="Award probability"]').getAttribute('href'),'#award-probability');
+ w.close();
+});
+test('successful assessment results provide a working route to award probability',async()=>{
+ const w=setup(),d=w.document;
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'account'},grants:[]}}));
+ w.grantAccount={saveGrant:async()=>{}};
+ d.querySelector('.new').click();
+ const form=d.querySelector('#form');
+ form.elements.name.value='New assessment';form.elements.funder.value='Foundation';form.elements.amount.value='1000';form.elements.deadline.value='2099-01-01';
+ await form.onsubmit({preventDefault(){},target:form});
+ assert.equal(d.querySelector('#detail-dialog').open,true);
+ d.querySelector('[data-open-probability]').click();
+ assert.equal(d.querySelector('#detail-dialog').open,false);
+ assert.equal(d.querySelector('#probability-page').hidden,false);
+ assert.equal(w.location.hash,'#award-probability');
+ w.close();
+});
