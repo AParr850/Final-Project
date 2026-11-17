@@ -45,3 +45,31 @@ test('saved opportunities stay separate and filter account records',()=>{
  assert.equal(d.querySelectorAll('#rows tr').length,2);
  w.close();
 });
+
+test('award probability page appears beneath overview and has its own route',()=>{
+ const w=setup('http://localhost/#award-probability'),d=w.document;
+ const links=[...d.querySelectorAll('nav [data-page]')].map(b=>b.dataset.page);
+ assert.deepEqual(links.slice(0,3),['Overview','Award probability','Grant assessments']);
+ assert.equal(d.querySelector('#probability-page').hidden,false);
+ assert.equal(d.querySelector('.assessments').hidden,true);
+ assert.equal(d.querySelector('.hero').hidden,true);
+ assert.equal(d.querySelector('#probability-result').textContent,'10%');
+ d.querySelector('[data-page="Overview"]').click();
+ assert.equal(d.querySelector('#probability-page').hidden,true);
+ w.close();
+});
+test('award estimate uses all four dropdowns and handles invalid counts and caps',()=>{
+ const w=setup('http://localhost/#award-probability'),d=w.document;
+ function choose(name,value){const select=d.querySelector('#probability-'+name);select.value=String(value);select.dispatchEvent(new w.Event('change',{bubbles:true}));}
+ choose('awards',20);choose('applicants',100);choose('fit',1.5);choose('relationship',1.25);
+ assert.equal(d.querySelector('#probability-result').textContent,'37.5%');
+ choose('awards',0);assert.equal(d.querySelector('#probability-result').textContent,'0%');
+ choose('awards',100);choose('applicants',100);
+ assert.equal(d.querySelector('#probability-result').textContent,'100%');
+ assert.match(d.querySelector('#probability-breakdown').textContent,/capped/);
+ choose('applicants',10);
+ assert.equal(d.querySelector('#probability-result').textContent,'Check counts');
+ choose('applicants',1000);
+ assert.equal(d.querySelector('#probability-result').textContent,'18.75%');
+ w.close();
+});
