@@ -139,3 +139,12 @@ test('probability estimate updates and can populate an assessment',()=>{
  assert.equal(d.querySelector('#use-award-estimate').disabled,true);
  w.close();
 });
+
+test('calculate button shows the formula using selected values and a percentage',()=>{
+ const w=setup('http://localhost/#award-probability'),d=w.document;
+ for(const [name,value] of [['awards','20'],['applicants','100'],['fit','1.5'],['relationship','1.25']])d.querySelector('#probability-'+name).value=value;
+ d.querySelector('#probability-form button[type="submit"]').click();
+ assert.match(d.querySelector('#award-estimate').textContent,/37.5%/);
+ assert.equal(d.querySelector('#award-calculation').textContent,'(20 ÷ 100) × 1.5 × 1.25 × 100 = 37.5%');
+ w.close();
+});
