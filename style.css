@@ -6,3 +6,5 @@
 .probability-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:28px 32px;margin-bottom:28px}.probability-formula{background:#edf1e5;color:var(--green);padding:18px;border-radius:7px;font-size:17px;line-height:1.6}.probability-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.probability-fields label{font-size:12px;line-height:1.6}.probability-fields select{display:block;width:100%;margin-top:8px;padding:12px;border:1px solid #dfe4d9;background:#fafbf8;color:var(--ink);border-radius:5px}@media(max-width:760px){.probability-card{padding:20px}.probability-fields{grid-template-columns:1fr}.probability-formula{font-size:15px}}
 
 nav a{text-decoration:none}.probability-shortcut{display:inline-block;margin-top:12px;color:var(--green);font-weight:600}
+
+.probability-estimate{margin-top:24px;padding:20px 24px;background:#edf3eb;border:1px solid #cbdcc6;border-radius:8px}.probability-estimate #award-estimate{font-size:24px;font-weight:700;color:var(--green);margin:0 0 10px}.probability-estimate #award-calculation{margin-bottom:0;font-size:14px;color:var(--ink)}
