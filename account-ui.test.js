@@ -53,7 +53,7 @@ test('award probability page appears beneath overview and has its own route',()=
  assert.equal(d.querySelector('#probability-page').hidden,false);
  assert.equal(d.querySelector('.assessments').hidden,true);
  assert.equal(d.querySelector('.hero').hidden,true);
- assert.equal(d.querySelector('#probability-page').children.length,2);
+ assert.match(d.querySelector('#award-estimate').textContent,/10%/);
  assert.equal(d.querySelector('.title-row').hidden,true);
  assert.equal(d.querySelector('#sync-status').hidden,true);
  d.querySelector('[data-page="Overview"]').click();
@@ -106,5 +106,36 @@ test('successful assessment results provide a working route to award probability
  assert.equal(d.querySelector('#detail-dialog').open,false);
  assert.equal(d.querySelector('#probability-page').hidden,false);
  assert.equal(w.location.hash,'#award-probability');
+ w.close();
+});
+
+test('unknown probability saves without inventing expected funding',async()=>{
+ const w=setup(),d=w.document;
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'a'},grants:[]}}));
+ let saved;w.grantAccount={saveGrant:async g=>{saved=g;}};
+ d.querySelector('.new').click();const f=d.querySelector('#form');
+ f.elements.name.value='Unknown odds';f.elements.funder.value='Foundation';f.elements.amount.value='50000';f.elements.deadline.value='2099-01-01';
+ assert.equal(f.elements.probability.required,false);
+ assert.equal(f.elements.probability.value,'');
+ assert.equal(f.checkValidity(),true);
+ await f.onsubmit({preventDefault(){},target:f});
+ assert.equal(saved.probability,'');
+ assert.match(d.querySelector('#detail').textContent,/Unknown/);
+ assert.match(d.querySelector('#detail').textContent,/Not available/);
+ assert.match(d.querySelector('#detail').textContent,/Break-even award chance/);
+ w.close();
+});
+test('probability estimate updates and can populate an assessment',()=>{
+ const w=setup('http://localhost/#award-probability'),d=w.document;
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'a'},grants:[]}}));
+ d.querySelector('#probability-fit').value='1.5';
+ d.querySelector('#probability-form').dispatchEvent(new w.Event('change'));
+ assert.match(d.querySelector('#award-estimate').textContent,/15%/);
+ d.querySelector('#use-award-estimate').click();
+ assert.equal(d.querySelector('#form-dialog').open,true);
+ assert.equal(d.querySelector('#form').elements.probability.value,'15');
+ d.querySelector('#probability-awards').value='200';
+ d.querySelector('#probability-form').dispatchEvent(new w.Event('change'));
+ assert.equal(d.querySelector('#use-award-estimate').disabled,true);
  w.close();
 });
