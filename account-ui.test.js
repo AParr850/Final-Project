@@ -255,3 +255,36 @@ test('old assessments without links and unsafe website values do not render webs
  }
  w.close();
 });
+
+const editableGrant={id:'editable',name:'Original grant',funder:'Foundation',amount:'50000',deadline:'2099-01-01',fit:'5',hours:'25',rate:'40',probability:'25',eligible:'yes',saved:true,createdAt:123,website:'https://example.org/grant'};
+function memberGrant(w){w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'member'},grants:[{...editableGrant}]}}));}
+test('edit on either grant page preserves identity and saved status and updates recommendation',async()=>{
+ for(const page of ['Grant assessments','Saved opportunities']){
+  const w=setup(),d=w.document;memberGrant(w);let saved;
+  w.grantAccount={saveGrant:async g=>{saved=g;}};
+  d.querySelector(`[data-page="${page}"]`).click();d.querySelector('[data-edit]').click();
+  const f=d.querySelector('#form');assert.equal(f.elements.name.value,'Original grant');assert.equal(f.elements.website.value,editableGrant.website);
+  f.elements.name.value='Edited grant';f.elements.fit.value='1';
+  await f.onsubmit({preventDefault(){},target:f});
+  assert.equal(saved.id,'editable');assert.equal(saved.createdAt,123);assert.equal(saved.saved,true);
+  assert.equal(d.querySelectorAll('#rows tr').length,1);assert.match(d.querySelector('#rows').textContent,/Edited grant/);assert.match(d.querySelector('#rows .badge').textContent,/Pass/);
+  w.close();
+ }
+});
+test('failed edit retains input and original record',async()=>{
+ const w=setup(),d=w.document;memberGrant(w);w.alert=()=>{};w.grantAccount={saveGrant:async()=>{throw Error('offline');}};
+ d.querySelector('[data-edit]').click();const f=d.querySelector('#form');f.elements.name.value='Unsaved edit';
+ await f.onsubmit({preventDefault(){},target:f});assert.equal(d.querySelector('#form-dialog').open,true);assert.equal(f.elements.name.value,'Unsaved edit');assert.match(d.querySelector('#rows').textContent,/Original grant/);w.close();
+});
+test('delete requires confirmation and removes the grant from both pages only after success',async()=>{
+ const w=setup(),d=w.document;memberGrant(w);let deleted=null;w.grantAccount={deleteGrant:async id=>{deleted=id;}};
+ w.confirm=()=>false;await d.querySelector('[data-delete]').onclick();assert.equal(deleted,null);assert.match(d.querySelector('#rows').textContent,/Original grant/);
+ w.confirm=()=>true;await d.querySelector('[data-delete]').onclick();assert.equal(deleted,'editable');
+ for(const page of ['Grant assessments','Saved opportunities']){d.querySelector(`[data-page="${page}"]`).click();assert.doesNotMatch(d.querySelector('#rows').textContent,/Original grant/);}
+ w.close();
+});
+test('failed delete retains grant and guest accounts have no mutation controls',async()=>{
+ const w=setup(),d=w.document;assert.equal(d.querySelector('[data-edit]'),null);assert.equal(d.querySelector('[data-delete]'),null);
+ memberGrant(w);w.confirm=()=>true;let warning='';w.alert=m=>warning=m;w.grantAccount={deleteGrant:async()=>{throw Error('offline');}};
+ await d.querySelector('[data-delete]').onclick();assert.match(warning,/Could not delete/);assert.match(d.querySelector('#rows').textContent,/Original grant/);assert.equal(d.querySelector('[data-delete]').disabled,false);w.close();
+});
