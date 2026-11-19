@@ -12,13 +12,13 @@ test('overview and assessments have separate views and URLs',()=>{
  d.querySelector('#overview-assessments').click();
  assert.equal(w.location.hash,'#grant-assessments');
  assert.equal(d.querySelector('.hero').hidden,true);
- assert.equal(d.querySelector('.stats'),null);
+ assert.equal(d.querySelector('.stats').hidden,false);
  assert.equal(d.querySelector('.assessments').hidden,false);
  assert.equal(d.querySelectorAll('#rows tr').length,4);
  assert.equal(d.querySelector('[data-page="Grant assessments"]').getAttribute('aria-current'),'page');
  d.querySelector('[data-page="Overview"]').click();
  assert.equal(d.querySelector('.assessments').hidden,true);
- assert.equal(d.querySelector('.stats'),null);
+ assert.equal(d.querySelector('.stats').hidden,true);
  w.close();
 });
 test('direct assessment URLs and history navigation select the matching page',async()=>{
@@ -147,5 +147,21 @@ test('calculate button shows the formula using selected values and a percentage'
  assert.match(d.querySelector('#award-estimate').textContent,/37.5%/);
  assert.equal(d.querySelector('#award-calculation').textContent,'(20 ÷ 100) × 1.5 × 1.25 × 100 = 37.5%');
  assert.equal(d.activeElement,d.querySelector('.probability-estimate'));
+ w.close();
+});
+
+test('summary cards are omitted only from overview and the standalone probability tool',()=>{
+ const w=setup(),d=w.document;
+ assert.equal(d.querySelector('.stats').hidden,true);
+ for(const page of ['Grant assessments','Saved opportunities']){
+  d.querySelector(`[data-page="${page}"]`).click();
+  assert.equal(d.querySelector('.stats').hidden,false);
+  assert.equal(d.querySelector('#total').textContent,'4');
+ }
+ d.querySelector('[data-page="Award probability"]').click();
+ assert.equal(d.querySelector('.stats').hidden,true);
+ assert.equal(d.querySelector('#probability-page').hidden,false);
+ d.querySelector('[data-page="Overview"]').click();
+ assert.equal(d.querySelector('.stats').hidden,true);
  w.close();
 });
