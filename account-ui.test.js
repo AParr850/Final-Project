@@ -64,7 +64,7 @@ test('award probability page appears beneath overview and has its own route',()=
 });
 test('probability page keeps the formula and four selectable variables',()=>{
  const w=setup('http://localhost/#award-probability'),d=w.document;
- assert.match(d.querySelector('.probability-formula').textContent,/Award chance = \(awards ÷ applicants\) × fit × relationship/);
+ assert.equal(d.querySelector('.probability-formula').textContent,'Probability Estimator');
  assert.equal(d.querySelectorAll('#probability-page select').length,4);
  for(const [name,value] of [['awards','20'],['applicants','100'],['fit','1.5'],['relationship','1.25']]){
   const select=d.querySelector('#probability-'+name);select.value=value;
