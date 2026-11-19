@@ -183,3 +183,18 @@ test('assessment explanation appears only on overview without changing other pag
  assert.equal(d.querySelector('#assessment-guide').hidden,false);
  w.close();
 });
+
+test('guest assessment message follows sign-in status on assessments and saved opportunities',()=>{
+ const w=setup(),d=w.document;
+ const change=user=>w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user,grants:[]}}));
+ for(const name of ['Grant assessments','Saved opportunities']){
+  d.querySelector(`[data-page="${name}"]`).click();
+  change(null);
+  assert.equal(d.querySelector('#guest-assessment-note').hidden,false);
+  change({uid:'member'});
+  assert.equal(d.querySelector('#guest-assessment-note').hidden,true);
+  change(null);
+  assert.equal(d.querySelector('#guest-assessment-note').hidden,false);
+ }
+ w.close();
+});
