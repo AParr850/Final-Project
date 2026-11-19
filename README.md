@@ -1,4 +1,4 @@
-# Grantwise
+# SeedFund
 A nonprofit grant decision dashboard with Firebase email/password accounts, private nonprofit profiles, and per-account grant assessments. Guests can explore sample data; creating or saving assessments requires login. Existing browser-only assessments are not automatically uploaded into an account.
 
 ## Run locally
