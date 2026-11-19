@@ -51,7 +51,7 @@ showAwardEstimate();
 
 function renderAccountOverview(){
  const profile=$('#profile-form').elements;
- for(const key of ['name','organization','mission','location','website'])$('#overview-'+key).textContent=profile.namedItem(key).value||'Not provided';
+ for(const key of ['name','organization','mission','website'])$('#overview-'+key).textContent=profile.namedItem(key).value||'Not provided';
  $('#overview-email').textContent=currentUser?.email||'Not provided';
  $('#overview-grant-count').textContent=grants.length;
  $('#overview-saved-count').textContent=grants.filter(g=>g.saved).length;
