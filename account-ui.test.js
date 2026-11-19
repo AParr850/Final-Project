@@ -288,3 +288,15 @@ test('failed delete retains grant and guest accounts have no mutation controls',
  memberGrant(w);w.confirm=()=>true;let warning='';w.alert=m=>warning=m;w.grantAccount={deleteGrant:async()=>{throw Error('offline');}};
  await d.querySelector('[data-delete]').onclick();assert.match(warning,/Could not delete/);assert.match(d.querySelector('#rows').textContent,/Original grant/);assert.equal(d.querySelector('[data-delete]').disabled,false);w.close();
 });
+
+test('grant icons follow recommendation rather than mission fit on assessments and saved opportunities',()=>{
+ const w=setup(),d=w.document;
+ const base={...editableGrant,saved:true};
+ const grants=[{...base,id:'pass',eligible:'no',fit:'5'},{...base,id:'consider',probability:''},{...base,id:'pursue'}];
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'a'},grants}}));
+ for(const page of ['Grant assessments','Saved opportunities']){
+  d.querySelector(`[data-page="${page}"]`).click();
+  assert.deepEqual([...d.querySelectorAll('#rows .grant-icon svg')].map(el=>el.getAttribute('aria-label')),['Seed — Pass','Seedling — Consider','Budding flower — Pursue']);
+ }
+ w.close();
+});
