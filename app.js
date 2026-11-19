@@ -48,3 +48,24 @@ $('#use-award-estimate').onclick=()=>{
  $('#form-dialog').showModal();
 };
 showAwardEstimate();
+
+function renderAccountOverview(){
+ const profile=$('#profile-form').elements;
+ for(const key of ['name','organization','mission','location','website'])$('#overview-'+key).textContent=profile.namedItem(key).value||'Not provided';
+ $('#overview-email').textContent=currentUser?.email||'Not provided';
+ $('#overview-grant-count').textContent=grants.length;
+ $('#overview-saved-count').textContent=grants.filter(g=>g.saved).length;
+}
+$('#open-account-overview').onclick=()=>{
+ if(!currentUser){$('#open-account').click();return;}
+ renderAccountOverview();$('#account-overview-dialog').showModal();
+};
+$('#close-account-overview').onclick=()=>$('#account-overview-dialog').close();
+$('#overview-edit-profile').onclick=()=>{
+ $('#account-overview-dialog').close();if(currentUser)$('#edit-profile').click();
+};
+window.addEventListener('accountchange',()=>{
+ $('#account-overview-dialog').close();
+ document.querySelectorAll('.account-overview-details dd').forEach(el=>el.textContent='');
+});
+window.addEventListener('profilechange',()=>{if(currentUser&&$('#account-overview-dialog').open)renderAccountOverview();});

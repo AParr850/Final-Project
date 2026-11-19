@@ -198,3 +198,30 @@ test('guest assessment message follows sign-in status on assessments and saved o
  }
  w.close();
 });
+
+test('organization box prompts guests to sign in and opens a private account overview for members',()=>{
+ const w=setup(),d=w.document;let login=false;
+ d.querySelector('#open-account').onclick=()=>login=true;
+ d.querySelector('#open-account-overview').click();assert.equal(login,true);
+ assert.equal(d.querySelector('#account-overview-dialog').open,false);
+ const grant={id:'one',name:'Grant',funder:'Foundation',amount:1000,deadline:'2099-01-01',fit:5,hours:1,rate:40,probability:50,eligible:'yes',saved:true};
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'a',email:'member@example.org'},grants:[grant]}}));
+ d.querySelector('#profile-form').elements.organization.value='Garden nonprofit';
+ d.querySelector('#open-account-overview').click();
+ assert.equal(d.querySelector('#account-overview-dialog').open,true);
+ assert.equal(d.querySelector('#overview-email').textContent,'member@example.org');
+ assert.equal(d.querySelector('#overview-organization').textContent,'Garden nonprofit');
+ assert.equal(d.querySelector('#overview-grant-count').textContent,'1');
+ assert.equal(d.querySelector('#overview-saved-count').textContent,'1');
+ d.querySelector('#profile-form').elements.organization.value='Updated nonprofit';
+ w.dispatchEvent(new w.Event('profilechange'));
+ assert.equal(d.querySelector('#overview-organization').textContent,'Updated nonprofit');
+ let edit=false;d.querySelector('#edit-profile').onclick=()=>edit=true;
+ d.querySelector('#overview-edit-profile').click();assert.equal(edit,true);
+ assert.equal(d.querySelector('#account-overview-dialog').open,false);
+ d.querySelector('#open-account-overview').click();
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:null,grants:[]}}));
+ assert.equal(d.querySelector('#account-overview-dialog').open,false);
+ assert.equal(d.querySelector('#overview-email').textContent,'');
+ w.close();
+});
