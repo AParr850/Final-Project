@@ -225,3 +225,33 @@ test('organization box prompts guests to sign in and opens a private account ove
  assert.equal(d.querySelector('#overview-email').textContent,'');
  w.close();
 });
+
+test('grant website is saved and linked after the recommendation in both assessment views',async()=>{
+ const w=setup(),d=w.document;let saved;
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'a'},grants:[]}}));
+ w.grantAccount={saveGrant:async g=>{saved=g;}};
+ d.querySelector('.new').click();const f=d.querySelector('#form');
+ Object.assign(f.elements.name,{value:'Linked grant'});f.elements.funder.value='Foundation';f.elements.amount.value='1000';f.elements.deadline.value='2099-01-01';f.elements.website.value='https://example.org/grant?a=1&b=2';
+ await f.onsubmit({preventDefault(){},target:f});
+ assert.equal(saved.website,'https://example.org/grant?a=1&b=2');
+ const detailLink=d.querySelector('#detail .grant-website');
+ assert.equal(detailLink.href,saved.website);assert.equal(detailLink.target,'_blank');
+ assert.equal(detailLink.rel,'noopener noreferrer');
+ w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'a'},grants:[{...saved,saved:true}]}}));
+ for(const page of ['Grant assessments','Saved opportunities']){
+  d.querySelector(`[data-page="${page}"]`).click();
+  const cell=d.querySelector('#rows tr').children[4];
+  assert.equal(cell.querySelector('.grant-website').href,saved.website);
+  assert.equal(cell.firstElementChild.classList.contains('badge'),true);
+ }
+ w.close();
+});
+test('old assessments without links and unsafe website values do not render website links',()=>{
+ const w=setup(),d=w.document;
+ for(const website of [undefined,'','javascript:alert(1)','data:text/html,unsafe','not a URL']){
+  const grant={id:'one',name:'Grant',funder:'Foundation',amount:1000,deadline:'2099-01-01',fit:5,hours:1,rate:40,probability:50,eligible:'yes',saved:false,website};
+  w.dispatchEvent(new w.CustomEvent('accountchange',{detail:{user:{uid:'a'},grants:[grant]}}));
+  assert.equal(d.querySelector('#rows .grant-website'),null);
+ }
+ w.close();
+});
