@@ -8,3 +8,5 @@
 nav a{text-decoration:none}.probability-shortcut{display:inline-block;margin-top:12px;color:var(--green);font-weight:600}
 
 .probability-estimate{margin-top:24px;padding:20px 24px;background:#edf3eb;border:1px solid #cbdcc6;border-radius:8px}.probability-estimate #award-estimate{font-size:24px;font-weight:700;color:var(--green);margin:0 0 10px}.probability-estimate #award-calculation{margin-bottom:0;font-size:14px;color:var(--ink)}
+
+.assessment-guide{margin:24px 0;padding:28px 32px;border:1px solid var(--line);border-radius:11px;background:#fff}.assessment-guide h2{font-family:Manrope,sans-serif;font-size:23px;margin:0 0 12px}.assessment-guide p{line-height:1.8;color:var(--muted)}.assessment-guide ol{padding-left:22px;margin:24px 0}.assessment-guide li{padding-left:8px;margin-bottom:20px;line-height:1.6}.assessment-guide li::marker{color:var(--green);font-weight:700}.assessment-guide li p{margin:7px 0 0}@media(max-width:760px){.assessment-guide{padding:22px 20px}}

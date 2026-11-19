@@ -9,7 +9,7 @@ function navigate(next){
  $('#page-title').innerHTML=overview?'Good opportunities.<br>Better decisions.':escape(next);
  $('#section-title').textContent=next;
  $('.title-row p').textContent=probability?'Explore how award rates, mission fit, and funder relationships affect your estimate.':overview?'Spend less time chasing grants. More time changing lives.':next==='Grant assessments'?'Review your grant assessments and decide what to pursue.':'Keep track of the opportunities you want to revisit.';
- for(const selector of ['.hero','.insight','#overview-assessments'])$(selector).hidden=!overview;
+ for(const selector of ['.hero','.insight','#overview-assessments','#assessment-guide'])$(selector).hidden=!overview;
  $('.assessments').hidden=overview||probability;
  $('.stats').hidden=overview||probability;
  $('#probability-page').hidden=!probability;

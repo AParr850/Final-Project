@@ -165,3 +165,21 @@ test('summary cards are omitted only from overview and the standalone probabilit
  assert.equal(d.querySelector('.stats').hidden,true);
  w.close();
 });
+
+test('assessment explanation appears only on overview without changing other page sections',()=>{
+ const w=setup(),d=w.document;
+ assert.equal(d.querySelector('#assessment-guide').hidden,false);
+ assert.match(d.querySelector('#assessment-guide').textContent,/How grant assessment works/);
+ assert.equal(d.querySelector('.stats').hidden,true);
+ assert.equal(d.querySelector('.assessments').hidden,true);
+ for(const name of ['Grant assessments','Saved opportunities','Award probability']){
+  d.querySelector(`[data-page="${name}"]`).click();
+  assert.equal(d.querySelector('#assessment-guide').hidden,true);
+  assert.equal(d.querySelector('.stats').hidden,name==='Award probability');
+  assert.equal(d.querySelector('.assessments').hidden,name==='Award probability');
+  assert.equal(d.querySelector('#probability-page').hidden,name!=='Award probability');
+ }
+ d.querySelector('[data-page="Overview"]').click();
+ assert.equal(d.querySelector('#assessment-guide').hidden,false);
+ w.close();
+});
