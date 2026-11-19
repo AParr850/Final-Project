@@ -14,3 +14,5 @@ nav a{text-decoration:none}.probability-shortcut{display:inline-block;margin-top
 button.workspace{width:100%;background:#fff;text-align:left;color:var(--ink)}button.workspace:focus-visible{outline:3px solid #b1c683;outline-offset:3px}.account-overview-details{display:grid;grid-template-columns:130px minmax(0,1fr);gap:14px;margin:24px 0 28px;line-height:1.6}.account-overview-details dt{color:var(--muted)}.account-overview-details dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}@media(max-width:760px){button.workspace{display:flex;margin:16px 0}.account-overview-details{grid-template-columns:1fr;gap:5px}.account-overview-details dd{margin-bottom:12px}}
 
 .grant-website{display:block;margin-top:10px;color:var(--green);font-size:11px;text-decoration:underline}.grant-website:focus-visible{outline:3px solid #b1c683;outline-offset:3px}
+
+.grant-actions{display:flex;align-items:center;gap:8px}.grant-actions>button:not(.row-button){border:1px solid var(--line);background:#f6f8f2;color:var(--green);border-radius:5px;padding:7px 9px;font-size:11px}.grant-actions>button.delete-grant{color:#914c41;background:#fffaf8}

@@ -1,6 +1,6 @@
 const el=s=>document.querySelector(s);
 let api=null,user=null,db=null,auth=null,stopProfile=null,stopGrants=null;
-window.grantAccount={saveGrant:async grant=>{if(!user||!api)throw Error('Please sign in to save an assessment.');await api.setDoc(api.doc(db,'users',user.uid,'grants',grant.id),grant);}};
+window.grantAccount={saveGrant:async grant=>{if(!user||!api)throw Error('Please sign in to save an assessment.');await api.setDoc(api.doc(db,'users',user.uid,'grants',grant.id),grant);},deleteGrant:async id=>{if(!user||!api)throw Error('Please sign in to delete an assessment.');await api.deleteDoc(api.doc(db,'users',user.uid,'grants',id));}};
 function message(text){el('#account-message').textContent=text;}
 function errorText(error){const messages={'auth/invalid-credential':'The email or password is incorrect.','auth/email-already-in-use':'An account already exists for this email. Try signing in or reset your password.','auth/weak-password':'Choose a password with at least 8 characters.','auth/too-many-requests':'Too many attempts. Please try again later.','auth/network-request-failed':'Unable to connect. Check your connection and try again.','permission-denied':'Your account could not access its data. Check the Firebase security rules.'};return messages[error.code]||'The request could not be completed. Please try again or contact your administrator.';}
 let mode='login';
