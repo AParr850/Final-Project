@@ -146,5 +146,6 @@ test('calculate button shows the formula using selected values and a percentage'
  d.querySelector('#probability-form button[type="submit"]').click();
  assert.match(d.querySelector('#award-estimate').textContent,/37.5%/);
  assert.equal(d.querySelector('#award-calculation').textContent,'(20 ÷ 100) × 1.5 × 1.25 × 100 = 37.5%');
+ assert.equal(d.activeElement,d.querySelector('.probability-estimate'));
  w.close();
 });
