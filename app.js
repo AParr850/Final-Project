@@ -19,7 +19,7 @@ function navigate(next){
  if(location.hash!==pageRoutes[next])location.hash=pageRoutes[next];
  const overview=next==='Overview',probability=next==='Award probability';
  $('#page-label').textContent=next;
- $('#page-title').innerHTML=overview?'Good opportunities.<br>Better decisions.':escape(next);
+ $('#page-title').innerHTML=overview?'Plant wisely.<br>Grow boldly.':escape(next);
  $('#section-title').textContent=next;
  $('.title-row p').textContent=probability?'Explore how award rates, mission fit, and funder relationships affect your estimate.':overview?'Spend less time chasing grants. More time changing lives.':next==='Grant assessments'?'Review your grant assessments and decide what to pursue.':'Keep track of the opportunities you want to revisit.';
  for(const selector of ['.hero','.insight','#overview-assessments','#assessment-guide'])$(selector).hidden=!overview;
